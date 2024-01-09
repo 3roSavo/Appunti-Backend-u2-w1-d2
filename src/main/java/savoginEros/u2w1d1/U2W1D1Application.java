@@ -24,6 +24,7 @@ public class U2W1D1Application {
 		Interviewer i = new Interviewer(aldoStudent);
 		 */
 
+		// METODO NUOVO
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(U2W1D1Application.class);
 
 		String beanCheStampaUnaStringa = (String) ctx.getBean("nomeCustomBeanGetString"); // ho usato un name custom nel BeansConfig invece di usare il nome del metodo
