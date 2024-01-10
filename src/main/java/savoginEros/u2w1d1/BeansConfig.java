@@ -1,22 +1,25 @@
 package savoginEros.u2w1d1;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.*;
 import savoginEros.u2w1d1.entities.*;
 
 @Configuration // annotazione obbligatoria per il metodo coi beans
+@PropertySource("application.properties") // serve per specificare come si chiama il file con le variabili d'ambiente
 public class BeansConfig {
 
     @Bean // obbligatorio per definire che questo metodo dovà tornare un oggetto gestito da Spring
-    FrontEndStudent getFES() {
-        return new FrontEndStudent("Aldo");
+    //@Primary  // in caso di ambiguità nel bean getInterviewer prenderà questo bean!
+    FrontEndStudent getFES(@Value("${student.name}") String name) { // @Value mi permette di leggere un valore da application.properties e passarlo come parametro
+        return new FrontEndStudent(name);
     }
     @Bean
+    //@Primary // in caso di ambiguità nel bean getInterviewer prenderà questo bean! Oppure ambiguità tra Component-bean e questi bean.
     BackEndStudent getBES() {
         return new BackEndStudent("Giovanni");
     }
     @Bean
+    //@Primary
     //@Scope("prototype")  // modificando lo scope in prototype, a ogni invocazione del metodo getBean() creerò una nuova istanza
     FullStackStudent getFSS() {
         return new FullStackStudent("Giacomo");
@@ -31,15 +34,17 @@ public class BeansConfig {
         return 34;
     }
     @Bean
-    Interviewer getInterviewer(FrontEndStudent student) {
+    Interviewer getInterviewer(IStudent student) { // Questo bean è UGUALE al Component bean, interviewer_component
         return new Interviewer(student);
-        // ma come fa a sapere che si riferisce proprio a quel metodo preciso di tipo FrontEndStudent?
-        // Beh nella lezione di oggi non è ancora prevista soluzione, mi pare.
+        // Quando Spring vede che abbiamo bisogno di una dipendenza applica il principio della Dependency Injection (DI),
+        // cioè la dipendenza viene iniettata, quindi riceverò da "fuori" l'oggetto
+
         // se qui avessi messo come parametro IStudent, application mi avrebbe dato errore perché
         // trova 3 possibili risultati e non sa quale scegliere!
         // Guarda sopra, abbiamo 3 bean che implementano tutti e 3 l'interfaccia IStudent!
         // quindi il nostro metodo dovrà specificarne solo una di classe con implementazione di IStudent
         // Oppure dovrei avere un solo bean con implementata l'interfaccia!
+        // OPPURE nel caso ci siano ambiguità posso aggiungere l'annotazione @Primary a un bean che voglio che si riferisca (solo)
     }
 
 }

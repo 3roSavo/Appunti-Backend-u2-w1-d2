@@ -14,37 +14,24 @@ public class U2W1D1Application {
 	public static void main(String[] args) {
 		SpringApplication.run(U2W1D1Application.class, args);
 
+		components();
 
-		// METODO TRADIZIONALE
-		/*
-		FrontEndStudent aldoStudent = new FrontEndStudent("Aldo");
-		BackEndStudent giovanniStudent = new BackEndStudent("Giovanni");
-		FullStackStudent giacomoStudent = new FullStackStudent("Giacomo");
 
-		Interviewer i = new Interviewer(aldoStudent);
-		 */
+	}
+	public void beansConfig() {
+		// ho messo tutto il codice dei beans del giorno prima qua dentro (metodo 2)
 
 		// METODO NUOVO
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(U2W1D1Application.class);
 
-		String beanCheStampaUnaStringa = (String) ctx.getBean("nomeCustomBeanGetString"); // ho usato un name custom nel BeansConfig invece di usare il nome del metodo
-		// getBean torna un object, quindi devo fare il casting (noi sappiamo il tipo specifico che ritorna getString() (cioè String) quindi lo castiamo)
-		// mettendo tra parentesi tonde il tipo specifico
-		System.out.println(beanCheStampaUnaStringa);
 
-		String student = ctx.getBean("getFES").toString();
+		FrontEndStudent student = (FrontEndStudent) ctx.getBean("getFES");
 		System.out.println(student);
 
 		Interviewer interviewer = (Interviewer) ctx.getBean("getInterviewer");
-		// getBean torna un object, quindi devo fare il casting (noi sappiamo il tipo specifico che ritorna getInterviewer quindi lo castiamo)
-		// mettendo tra parentesi tonde il tipo specifico
+
 		System.out.println(interviewer);
-		// In pratica cerca nello "scatolone" e va a cercare un bean col nome del metodo "getInterviewer"
-		// Questo bean è già stato creato in precedenza nella classe di configurazione BeansConfig
-		// ATTENZIONE, il configuratore risolve/assegna eventuali dipendenze collegandole in automatico,
-		// mi riferisco alle dipendenze create con l'interfaccia IStudent implementata nelle 3 classi.
-		// Quindi mi ritroverò ad avere a disposizione un oggetto Interviewer già creato e già con lo studente assegnato.
-		// Se ho capito bene un elemento di tipo IStudent (interfaccia) si può riferire a più (in questo caso 3) classi specifiche.
+
 		interviewer.askQuestion();
 
 		// Stampiamo gli altri due oggetti, creandoli usando i metodi beans
@@ -59,17 +46,38 @@ public class U2W1D1Application {
 		System.out.println(student3);
 
 		System.out.println(ctx.getBean("getFSS"));
-		// qui non creerò una nuova istanza, ma di default modificherò sempre e solo quella
-		// Quindi ne avremo solo una, che posso modificare in ogni momento.
 
-		// Altro esempio pratico....
-		// FullStackStudent anotherStudent = student3;  // anotherStudent è un altro riferimento a student3. SINGLETON
-		// FullStackStudent anotherStudent = new FullStackStudent("Beppe"); // Creo una nuova istanza. PROTOTYPE
+		ctx.close();
+	}
+	public static void components() {
+		// metodo 3
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(U2W1D1Application.class);
 
-		ctx.close(); // sempre meglio chiudere il context
+		//Interviewer i = ctx.getBean(Interviewer.class);
+		// mi troverà il bean getInterviewer() (perché utilizza proprio quella classe li) e il Component Interviewer, quindi c'è un conflitto.
+		// Il conflitto deriva dall'avere nel contenitore due bean uguali (che creano due istanze uguali),
+		// uno presente nella BeansConfig e l'altro presente attraverso il @Component della classe Interviewer.
+
+		// stiamo cercando per classe di tipo Interviewer ma ATTENZIONE, così mi ritroverà la classe Component Interviewer che
+		// creerà un bean, poi cercherà anche tutti i bean di tipo Interviewer e ne troverà uno: getInterviewer()
+		// Cerchiamo di essere più specifici assegnando un nome al Component e cercare per nome del bean nel getBean() per evitare conflitti!
+		Interviewer i = (Interviewer) ctx.getBean("interviewer_component");
+		// In questo modo non ci sono ambiguità, mi cercherà il bean di nome interviewer_component, che è il nome del Component
+		// CURIOSITA': il nome del bean creato con Component se non dichiarato sarà il nome della classe in MINUSCOLO.
+		System.out.println(i);
+		i.askQuestion();
+		// ho a disposizione tutti i metodi di Interviewer, quindi ad askQuestion(), che a sua volta accede
+		// all'oggetto studente con @Primary, che ricordiamo che se non ci fosse ci sarebbe il conflitto con 3 bean studente che implementano tale interfaccia
+		// Quindi ecco spiegato il 3° modo di creare bean, e come il secondo metodo con la classe di configurazione dei bean ho a disposizione i suoi metodi
+
+		ctx.close();
+
 
 
 
 	}
 
+
 }
+
+
