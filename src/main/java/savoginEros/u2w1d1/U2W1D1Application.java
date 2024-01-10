@@ -62,13 +62,18 @@ public class U2W1D1Application {
 		// creerà un bean, poi cercherà anche tutti i bean di tipo Interviewer e ne troverà uno: getInterviewer()
 		// Cerchiamo di essere più specifici assegnando un nome al Component e cercare per nome del bean nel getBean() per evitare conflitti!
 		Interviewer i = (Interviewer) ctx.getBean("interviewer_component");
+		Interviewer i2 = (Interviewer) ctx.getBean("getInterviewer");
 		// In questo modo non ci sono ambiguità, mi cercherà il bean di nome interviewer_component, che è il nome del Component
 		// CURIOSITA': il nome del bean creato con Component se non dichiarato sarà il nome della classe in MINUSCOLO.
 		System.out.println(i);
 		i.askQuestion();
-		// ho a disposizione tutti i metodi di Interviewer, quindi ad askQuestion(), che a sua volta accede
+		System.out.println(i2); // Due bean uguali, non c'è nessun problema, l'importante è che Spring riesca a risolvere le dipendenze.
+		// Il bean interviewer_component è associato al bean getFES(), invece il bean getInterviewer è associato tramite @Primary al bean getFSS
+		i2.askQuestion();
+		//i.askQuestion();
+		// ho a disposizione tutti i metodi di Interviewer, quindi anche askQuestion(), che a sua volta accede
 		// all'oggetto studente con @Primary, che ricordiamo che se non ci fosse ci sarebbe il conflitto con 3 bean studente che implementano tale interfaccia
-		// Quindi ecco spiegato il 3° modo di creare bean, e come il secondo metodo con la classe di configurazione dei bean ho a disposizione i suoi metodi
+		// Quindi ecco spiegato il 3° modo per creare beans, e come il secondo metodo con la classe di configurazione dei bean ho a disposizione i suoi metodi
 
 		ctx.close();
 

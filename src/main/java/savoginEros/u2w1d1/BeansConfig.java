@@ -19,7 +19,7 @@ public class BeansConfig {
         return new BackEndStudent("Giovanni");
     }
     @Bean
-    //@Primary
+    @Primary
     //@Scope("prototype")  // modificando lo scope in prototype, a ogni invocazione del metodo getBean() creerò una nuova istanza
     FullStackStudent getFSS() {
         return new FullStackStudent("Giacomo");
@@ -42,9 +42,16 @@ public class BeansConfig {
         // se qui avessi messo come parametro IStudent, application mi avrebbe dato errore perché
         // trova 3 possibili risultati e non sa quale scegliere!
         // Guarda sopra, abbiamo 3 bean che implementano tutti e 3 l'interfaccia IStudent!
-        // quindi il nostro metodo dovrà specificarne solo una di classe con implementazione di IStudent
+        // Quindi il nostro metodo dovrà specificarne solo una di classe con implementazione di IStudent
         // Oppure dovrei avere un solo bean con implementata l'interfaccia!
         // OPPURE nel caso ci siano ambiguità posso aggiungere l'annotazione @Primary a un bean che voglio che si riferisca (solo)
+
+        // Ora proviamo a levare @Primary da un bean dei 3 studenti e mettiamo @Qualifier nel costruttore del Component Interviewer
+        // Quindi mi creerà un bean prendendo un altro bean, cioè il bean "getFSS", e qui tutto bene
+        // MA c'è un problema, se non commento il bean getInterviewer() avrò il solito problema che non sa quale
+        // bean di tipo IStudent (e quindi dei 3 tipi di studente) scegliere.
+        // RICORDATI che si possono avere più bean che tornano la stessa cosa, l'importante è che SPRING riesca a risolverne le dipendenze
+        // e quindi che non ci siano conflitti
     }
 
 }

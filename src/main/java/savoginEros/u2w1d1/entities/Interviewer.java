@@ -3,7 +3,7 @@ package savoginEros.u2w1d1.entities;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-@Component("interviewer_component") // Utilizziamo il metodo 3 per ..... rendiamo boooooh questa classe
+@Component("interviewer_component") // Utilizziamo il metodo 3 per creare oggetti nel container
 public class Interviewer {
     // ATTRIBUTI
     //@Autowired // Field Dependency Injection
@@ -15,11 +15,12 @@ public class Interviewer {
     // COSTRUTTORE
     // @Autowired Qua serve per effettuare la Constructor DI cioè dependency injection (ma è opzionale nel costruttore, cioè è implicito)
     // nel senso che è implicita che sia e quindi anche senza questa annotazione verrà risolta lo stesso la dipendenza
-    public Interviewer(@Qualifier("getFSS") IStudent student) {
+    public Interviewer(@Qualifier("getFES") IStudent student) {
         // In caso di ambiguità (ci sono più Bean di tipo IStudent) posso:
         // - o usare @Primary su uno specifico Bean
         // - oppure usare @Qualifier per specificare quale Bean scegliere per nome (qui direttamente nel costruttore)
         // se utilizzassi entrambi, vincerebbe il @Qualifier
+        // ATTENZIONE, devo commentare il getInterviewer()
         // this.student = new BackendStudent("Ajeje", "Brazorf"); // <-- ACCOPPIAMENTO FORTE, NON LO VOGLIAMO!
         // Invece quello che stiamo facendo è debole, quindi flessibile e facilmente modificabile
         this.student = student;
